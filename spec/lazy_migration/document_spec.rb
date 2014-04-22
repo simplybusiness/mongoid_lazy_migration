@@ -31,6 +31,12 @@ describe Mongoid::LazyMigration::Document, ".migration(lock)" do
   # I don't know how to test this. Please help.
   it "busy waits when a model has a migration in process"
   it "never lets two migrations happen at the same time on the same model"
+
+  it "fails when processing migration has more than 10 retries" do
+    expect do
+      ModelLock.find(processing)
+    end.to raise_error(/retries/)
+  end
 end
 
 describe Mongoid::LazyMigration::Document, ".migration(atomic)" do

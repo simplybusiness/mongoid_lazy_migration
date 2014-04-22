@@ -79,6 +79,11 @@ module Mongoid::LazyMigration::Document
     # We do not explicitly sleep during the loop in the hope of getting a
     # lower latency. reload() sleeps anyway waiting for mongodb to respond.
     # Besides, this is a corner case since contention should be very low.
-    reload until migration_state == :done
+    retries = 0
+    until migration_state == :done
+      reload
+      retries += 1
+      raise "#{retries} retries - That's too many for #{self.class}:#{id}" if retries > 10
+    end
   end
 end
