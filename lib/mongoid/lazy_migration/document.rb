@@ -1,4 +1,6 @@
 module Mongoid::LazyMigration::Document
+  MAX_RELOAD_RETRIES = 42
+
   def ensure_migration
     self.migration_state = :done if new_record?
 
@@ -83,7 +85,7 @@ module Mongoid::LazyMigration::Document
     until migration_state == :done
       reload
       retries += 1
-      raise "#{retries} retries - That's too many for #{self.class}:#{id}" if retries > 10
+      raise "#{retries} retries - That's too many for #{self.class}:#{id}" if retries > MAX_RELOAD_RETRIES
     end
   end
 end
