@@ -39,25 +39,19 @@ module Mongoid::LazyMigration::Document
     # migration in wait_for_completion.
     return if self.class.lock_migration && !try_lock_migration
 
-    begin
-      self.class.skip_callback :create, :update, :set_updated_at
+    @running_migrate_block = true
+    instance_eval(&self.class.migrate_block)
+    @running_migrate_block = false
 
-      @running_migrate_block = true
-      instance_eval(&self.class.migrate_block)
-      @running_migrate_block = false
-
-      # For atomic migrations, save() will be performed with the
-      # following additional selector (see atomic_selector):
-      #   :migration_state => { "$ne" => :done }
-      # This guarantee that we never commit more than one migration on a
-      # document, even though we are not taking a lock.
-      # Since we do not call reload on the model in case of a race, it is
-      # preferable to have a deterministic migration to avoid surprises.
-      self.migration_state = :done
-      save(:validate => false)
-    ensure
-      self.class.set_callback :create, :update, :set_updated_at
-    end
+    # For atomic migrations, save() will be performed with the
+    # following additional selector (see atomic_selector):
+    #   :migration_state => { "$ne" => :done }
+    # This guarantee that we never commit more than one migration on a
+    # document, even though we are not taking a lock.
+    # Since we do not call reload on the model in case of a race, it is
+    # preferable to have a deterministic migration to avoid surprises.
+    self.migration_state = :done
+    save(:validate => false)
   end
 
   def try_lock_migration
