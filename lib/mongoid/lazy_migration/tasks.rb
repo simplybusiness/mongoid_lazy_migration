@@ -34,9 +34,12 @@ module Mongoid::LazyMigration::Tasks
 
     # The design goal behind this is to have as little impact on the production system.
     # That's why we don't make a single query that updates all matching fields, although we would have to test it.
-    model.
-      collection.
-      find(selector).
+    to_cleanup = model.collection.find(selector)
+
+    progress = ProgressBar.new("#{model.class.to_s} cleanup", to_cleanup.count)
+    progress.long_running
+
+    to_cleanup.
       select('_id' => 1).
       batch_size(500).
       each_with_index.
@@ -44,6 +47,7 @@ module Mongoid::LazyMigration::Tasks
         model.collection.find(_id: document["_id"]).update_all(
           { "$unset" => { "migration_state" => "" } }
         )
+        progress.inc
     end
   end
 end
