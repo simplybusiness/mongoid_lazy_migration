@@ -7,6 +7,17 @@ def insert_raw(type, fields={})
   id
 end
 
+describe "Mongodb Index" do
+  it "has an index on migration_state field" do
+    ModelAtomic.collection.indexes.entries.size.should == 0
+    ModelAtomic.create_indexes
+    result = ModelAtomic.collection.indexes.entries.select{ |e| e['key'] == {"migration_state" => 1}}.first
+    result.should be_present
+  end
+
+  it "doesn't create an index if migration block is not present"
+end
+
 describe Mongoid::LazyMigration::Document, ".migration(lock)" do
   let(:pending)    { insert_raw(ModelLock) }
   let(:processing) { insert_raw(ModelLock, :migration_state => :processing) }

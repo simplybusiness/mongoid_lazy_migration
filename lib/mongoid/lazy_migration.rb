@@ -22,6 +22,8 @@ module Mongoid
         include Mongoid::LazyMigration::Document
 
         field :migration_state, :type => Symbol, :default => :pending
+        index({ migration_state: 1 }, { background: true })
+
         after_initialize :ensure_migration, :unless => proc { @migrating }
 
         cattr_accessor :migrate_block, :lock_migration
