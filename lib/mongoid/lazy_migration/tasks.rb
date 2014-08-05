@@ -1,7 +1,7 @@
 module Mongoid::LazyMigration::Tasks
-  def migrate(criteria=nil)
-    require 'progressbar'
+  require 'progressbar'
 
+  def migrate(criteria=nil)
     criterias = criteria.nil? ? Mongoid::LazyMigration.models_to_migrate : [criteria]
 
     criterias.each do |criteria|
@@ -36,7 +36,7 @@ module Mongoid::LazyMigration::Tasks
     # That's why we don't make a single query that updates all matching fields, although we would have to test it.
     to_cleanup = model.collection.find(selector)
 
-    progress = ProgressBar.new("#{model.class.to_s} cleanup", to_cleanup.count)
+    progress = ProgressBar.new("#{model} cleanup", to_cleanup.count)
     progress.long_running
 
     to_cleanup.
