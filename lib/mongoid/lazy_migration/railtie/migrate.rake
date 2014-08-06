@@ -1,6 +1,13 @@
 namespace :db do
   namespace :mongoid do
-    desc 'Migrate the documents specified by criteria. criteria is optional'
+    desc <<-HEREDOC
+      Migrate the documents specified by criteria. criteria is optional
+
+      Simple Example:
+        be rake db:mongoid:lazy_migrate[Model]
+      More advanced example:
+        be rake db:mongoid:lazy_migrate["Model.where(:created_at => '2014-04-01'.to_date..Date.tomorrow)"]
+    HEREDOC
     task :lazy_migrate, [:criteria] => :environment do |t, args|
       criteria = args.criteria ? eval(args.criteria) : nil
       Mongoid::LazyMigration.migrate(criteria)
@@ -12,7 +19,13 @@ namespace :db do
       Mongoid::LazyMigration.cleanup(eval(args.model))
     end
 
-    desc "Reset the migration_state, requires: Model name and object's id"
+    desc <<-HEREDOC
+      Reset object's migration_state to pending, requires: Model name and object's id.
+
+      It can happen that migration block will raise an error, or the process that runs migraiton
+      stop, and leave the object in the processing state. To proceed we need to reset that state to pending, so the
+      next time the object is loaded it will perform migraion.
+    HEREDOC
     task :reset_state, [:model, :model_id] => :environment do |t, args|
       raise "Please provide a model" unless args.model
       raise "Please provide a object's id" unless args.model_id
