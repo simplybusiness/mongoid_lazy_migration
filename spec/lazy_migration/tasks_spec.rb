@@ -47,4 +47,15 @@ describe Mongoid::LazyMigration, ".cleanup" do
   it "chokes if the migration is still defined" do
     proc { Mongoid::LazyMigration.cleanup(ModelAtomic) }.should raise_error
   end
+
+  describe Mongoid::LazyMigration, ".reset_state" do
+    let(:processing_id) { insert_raw(ModelLock, :migration_state => :processing) }
+
+    it "resets state of the object to pending" do
+      Mongoid::LazyMigration.reset_state(ModelLock, processing_id)
+      obj = ModelLock.collection.find({'_id' => Moped::BSON::ObjectId.from_string(processing_id)}).first
+
+      expect(obj['migration_state']).to eq :pending
+    end
+  end
 end

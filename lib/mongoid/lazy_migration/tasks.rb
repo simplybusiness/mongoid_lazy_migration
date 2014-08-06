@@ -50,4 +50,11 @@ module Mongoid::LazyMigration::Tasks
         progress.inc
     end
   end
+
+  # It might happened that object is locked with the processing state
+  def reset_state(model, model_id)
+    model.collection.find({'_id' => Moped::BSON::ObjectId.from_string(model_id)}).update({
+      "$set" => {'migration_state' => :pending}
+    })
+  end
 end
