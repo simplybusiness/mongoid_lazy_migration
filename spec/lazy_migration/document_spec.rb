@@ -1,13 +1,7 @@
 require 'spec_helper'
 require 'support/models'
 
-def insert_raw(type, fields={})
-  id = BSON::ObjectId.new
-  type.collection.insert({:_id => id}.merge(fields))
-  id
-end
-
-describe "Mongodb Index" do
+describe "Mongodb index on migration_state" do
   it "has an index on migration_state field" do
     ModelAtomic.collection.indexes.entries.size.should == 0
     ModelAtomic.create_indexes
@@ -15,7 +9,12 @@ describe "Mongodb Index" do
     result.should be_present
   end
 
-  it "doesn't create an index if migration block is not present"
+  it "doesn't create an index if migration block is not present" do
+    ModelNoMigration.collection.indexes.entries.size.should == 0
+    ModelNoMigration.create_indexes
+    result = ModelNoMigration.collection.indexes.entries.select{ |e| e['key'] == {"migration_state" => 1}}.first
+    result.should be_nil
+  end
 end
 
 describe Mongoid::LazyMigration::Document, ".migration(lock)" do

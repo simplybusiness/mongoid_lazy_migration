@@ -13,7 +13,7 @@ namespace :db do
       Mongoid::LazyMigration.migrate(criteria)
     end
 
-    desc 'Cleanup a migration'
+    desc 'Cleanup a migration - remove migration_state field'
     task :cleanup_migration, [:model] => :environment do |t, args|
       raise "Please provide a model" unless args.model
       Mongoid::LazyMigration.cleanup(eval(args.model))
@@ -25,6 +25,9 @@ namespace :db do
       It can happen that migration block will raise an error, or the process that runs migraiton
       stop, and leave the object in the processing state. To proceed we need to reset that state to pending, so the
       next time the object is loaded it will perform migraion.
+
+      Example:
+        be rake db:mongoid:reset_state[Model,"idididididididid"]
     HEREDOC
     task :reset_state, [:model, :model_id] => :environment do |t, args|
       raise "Please provide a model" unless args.model
