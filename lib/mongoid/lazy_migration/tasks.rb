@@ -1,17 +1,16 @@
 module Mongoid::LazyMigration::Tasks
-  def migrate(criteria=nil)
-    require 'progressbar'
+  require 'progressbar'
 
+  def migrate(criteria=nil)
     criterias = criteria.nil? ? Mongoid::LazyMigration.models_to_migrate : [criteria]
 
     criterias.each do |criteria|
-      to_migrate = criteria.where(:migration_state.ne => :done).batch_size(50)
+      to_migrate = criteria.where(:migration_state.ne => :done).batch_size(400)
       progress = ProgressBar.new(to_migrate.klass.to_s, to_migrate.count)
       progress.long_running
 
       to_migrate.each_with_index do |o, i|
         progress.inc
-        sleep 0.07 if i % 100 == 0
       end
 
       progress.finish
@@ -24,7 +23,6 @@ module Mongoid::LazyMigration::Tasks
       raise "Remove the migration from your model before cleaning up the database"
     end
 
-    # @todo: the migration_state is not indexed, wouldn't this query kill DB?
     if model.where(:migration_state => :processing).limit(1).count > 0
       raise ["Some models are still being processed.",
              "Remove the migration code, and go inspect them with:",
@@ -32,15 +30,31 @@ module Mongoid::LazyMigration::Tasks
              "Don't forget to remove the migration block"].join("\n")
     end
 
-    selector = { :migration_state => { "$exists" => true }}
-    changes  = {"$unset" => { :migration_state => 1}}
-    safety   = { :safe => true, :multi => true }
-    multi    = { :multi => true }
+    selector = { 'migration_state' => {'$in' => ['done']} }
 
-    if Mongoid::LazyMigration.mongoid3
-      model.with(safety).where(selector).query.update(changes, multi)
-    else
-      model.collection.update(selector, changes, safety.merge(multi))
+    # The design goal behind this is to have as little impact on the production system.
+    # That's why we don't make a single query that updates all matching fields, although we would have to test it.
+    to_cleanup = model.collection.find(selector)
+
+    progress = ProgressBar.new("#{model} cleanup", to_cleanup.count)
+    progress.long_running
+
+    to_cleanup.
+      select('_id' => 1).
+      batch_size(500).
+      each_with_index.
+      each do |document, index|
+        model.collection.find(_id: document["_id"]).update_all(
+          { "$unset" => { "migration_state" => "" } }
+        )
+        progress.inc
     end
+  end
+
+  # It might happened that object is locked with the processing state
+  def reset_state(model, model_id)
+    model.collection.find({'_id' => Moped::BSON::ObjectId.from_string(model_id)}).update({
+      "$set" => {'migration_state' => :pending}
+    })
   end
 end

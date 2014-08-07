@@ -34,3 +34,9 @@ RSpec.configure do |config|
     Mongoid::IdentityMap.clear
   end
 end
+
+def insert_raw(type, fields={})
+  id = BSON::ObjectId.new
+  type.collection.insert({:_id => id}.merge(fields))
+  id
+end
