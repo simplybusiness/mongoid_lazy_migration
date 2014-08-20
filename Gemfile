@@ -7,6 +7,5 @@ group :test do
   gem 'rake'
   gem 'mongoid', "~> #{ENV['MONGOID_VERSION']}"
   gem 'rspec'
-  gem 'mocha', :require => false
   gem 'pry-plus'
 end
