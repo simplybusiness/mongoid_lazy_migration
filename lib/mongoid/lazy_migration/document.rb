@@ -64,11 +64,7 @@ module Mongoid::LazyMigration::Document
     changes  = { "$set" => { 'migration_state' => 'processing' }}
     safety   = { :safe => true }
 
-    if Mongoid::LazyMigration.mongoid3
-      self.class.with(safety).where(selector).query.update(changes)
-    else
-      collection.update( selector, changes, safety)
-    end['updatedExisting']
+    self.class.with(safety).where(selector).query.update(changes)['updatedExisting']
   end
 
   def wait_for_completion

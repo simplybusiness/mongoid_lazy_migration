@@ -1,7 +1,9 @@
 Mongoid Lazy Migration
 ======================
 
-## (Temporary) This is a forked version, that aims to support only Mongoid in ver 3.1.6 +
+## (Temporary) This is a forked version, that aims to support only Mongoid in ver 4.0.0 +
+
+### If you use Mongoid in version 3.1.6 check the git tags.
 
 
 [![Build Status](https://secure.travis-ci.org/nviennot/mongoid_lazy_migration.png?branch=master)](http://travis-ci.org/nviennot/mongoid_lazy_migration)
@@ -239,9 +241,7 @@ A couple of points that you need to be aware of:
 Compatibility
 -------------
 
-LazyMigration is tested against against MRI 1.8.7, 1.9.2, 1.9.3, JRuby-1.8, JRuby-1.9.
-
-Both Mongoid 2.4.x and Mongoid 3.0.x are supported.
+This version of LazyMigration is tested against MRI 2.0.0p247
 
 License
 -------
