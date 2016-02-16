@@ -3,8 +3,8 @@ require 'support/models'
 require 'support/mute_progressbar'
 
 describe Mongoid::LazyMigration, ".migrate" do
-  let!(:pendings_lock)   { 5.times { ModelLock.collection.insert({})} }
-  let!(:pendings_atomic) { 5.times { ModelAtomic.collection.insert({})} }
+  let!(:pendings_lock)   { 5.times { ModelLock.collection.insert_one({})} }
+  let!(:pendings_atomic) { 5.times { ModelAtomic.collection.insert_one({})} }
 
   it "migrates all the models by default" do
     ModelLock.where(:migrated => true).count.should == 0
@@ -30,8 +30,8 @@ describe Mongoid::LazyMigration, ".migrate" do
 end
 
 describe Mongoid::LazyMigration, ".cleanup" do
-  let!(:done1) { ModelNoMigration.collection.insert(:migration_state => :done) }
-  let!(:done2) { ModelNoMigration.collection.insert(:migration_state => :done) }
+  let!(:done1) { ModelNoMigration.collection.insert_one(:migration_state => :done) }
+  let!(:done2) { ModelNoMigration.collection.insert_one(:migration_state => :done) }
 
   it "cleans up all the documents of a specific class" do
     Mongoid::LazyMigration.cleanup(ModelNoMigration)
@@ -39,7 +39,7 @@ describe Mongoid::LazyMigration, ".cleanup" do
   end
 
   it "chokes if any documents are still being processed" do
-    ModelNoMigration.collection.insert(:migration_state => :processing)
+    ModelNoMigration.collection.insert_one(:migration_state => :processing)
     proc { Mongoid::LazyMigration.cleanup(ModelNoMigration) }.should raise_error
     ModelNoMigration.where(:migration_state => nil).count.should == 0
   end

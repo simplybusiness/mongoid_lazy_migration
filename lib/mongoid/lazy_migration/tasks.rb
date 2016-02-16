@@ -35,8 +35,7 @@ module Mongoid::LazyMigration::Tasks
     selector = { :migration_state => { "$exists" => true }}
     changes  = {"$unset" => { :migration_state => 1}}
     safety   = { :safe => true, :multi => true }
-    multi    = { :multi => true }
 
-    model.with(safety).where(selector).query.update(changes, multi)
+    model.with(safety).where(selector).update_all(changes)
   end
 end
