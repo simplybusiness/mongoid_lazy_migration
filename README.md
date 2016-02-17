@@ -1,13 +1,6 @@
 Mongoid Lazy Migration
 ======================
 
-## (Temporary) This is a forked version, that aims to support only Mongoid in ver 4.0.0 +
-
-### If you use Mongoid in version 3.1.6 check the git tags.
-
-
-[![Build Status](https://secure.travis-ci.org/nviennot/mongoid_lazy_migration.png?branch=master)](http://travis-ci.org/nviennot/mongoid_lazy_migration)
-
 LazyMigration allows you to migrate a Mongoid collection on the fly. As
 instances of your model are initialized, the migration is run. In the
 background, workers can traverse the collection and migrate other documents.
@@ -241,7 +234,8 @@ A couple of points that you need to be aware of:
 Compatibility
 -------------
 
-This version of LazyMigration is tested against MRI 2.0.0p247
+Mongoid 5.0.0+
+This version of LazyMigration is tested against MRI ruby 2.2.3p173
 
 License
 -------
