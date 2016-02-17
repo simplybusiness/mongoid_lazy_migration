@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoid_lazy_migration (0.7.0)
+    mongoid_lazy_migration (0.8.0)
       activesupport
       mongoid (~> 5.0.0)
       progressbar
