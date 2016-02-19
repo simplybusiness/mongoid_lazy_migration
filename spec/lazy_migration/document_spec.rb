@@ -20,6 +20,10 @@ describe Mongoid::LazyMigration::Document, ".migration(lock)" do
     ModelLock.find(done).migrated.should_not == true
   end
 
+  it "doesn't migrate pending models that use a projection" do
+    ModelLock.only(:migrated).find(pending).migrated.should_not == true
+  end
+
   it "doesn't update the updated_at field during the migration" do
     model = ModelLock.find(pending)
     model.updated_at.should == nil
@@ -50,6 +54,10 @@ describe Mongoid::LazyMigration::Document, ".migration(atomic)" do
 
   it "doesn't migrate done models on fetch" do
     ModelAtomic.find(done).migrated.should_not == true
+  end
+
+  it "doesn't migrate pending models that use a projection" do
+    ModelAtomic.only(:migrated).find(pending).migrated.should_not == true
   end
 
   # I don't know how to test this. Please help.

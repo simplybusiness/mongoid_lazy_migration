@@ -20,7 +20,7 @@ module Mongoid
         include Mongoid::LazyMigration::Document
 
         field :migration_state, :type => Symbol, :default => :pending
-        after_initialize :ensure_migration, :unless => proc { @migrating }
+        after_initialize :ensure_migration, :unless => proc { @migrating || attribute_missing?(:migration_state) }
 
         cattr_accessor :migrate_block, :lock_migration
         self.migrate_block = block
