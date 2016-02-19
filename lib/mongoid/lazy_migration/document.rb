@@ -62,9 +62,12 @@ module Mongoid::LazyMigration::Document
 
     selector = atomic_selector.merge('migration_state' => { "$in" => [nil, 'pending'] })
     changes  = { "$set" => { 'migration_state' => 'processing' }}
-    safety   = { :safe => true }
 
-    self.class.with(safety).where(selector).query.update(changes)['updatedExisting']
+    view = self.class.criteria.view
+    cmd = { :findandmodify => collection.name, :query => selector, update: changes, bypassDocumentValidation: false }
+    result = view.database.command(cmd)
+
+    (doc = result.documents.first) && doc[:lastErrorObject] && doc[:lastErrorObject]["updatedExisting"]
   end
 
   def wait_for_completion

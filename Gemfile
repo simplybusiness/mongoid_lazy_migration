@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
-ENV['MONGOID_VERSION'] ||= '4.0.0'
+ENV['MONGOID_VERSION'] ||= '5.0.0'
 
 group :test do
   gem 'rake'
