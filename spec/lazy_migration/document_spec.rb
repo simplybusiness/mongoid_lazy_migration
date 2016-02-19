@@ -61,10 +61,6 @@ describe Mongoid::LazyMigration::Document, ".migration(atomic)" do
     ModelAtomic.find(done).migrated.should_not == true
   end
 
-  it "doesn't migrate pending models that use a projection" do
-    ModelAtomic.only(:migrated).find(pending).migrated.should_not == true
-  end
-
   context "readonly documents" do
     it "doesn't migrate pending models that are readonly" do
       ModelAtomic.only(:migrated).find(pending).migrated.should_not == true
