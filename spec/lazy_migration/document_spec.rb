@@ -20,6 +20,15 @@ describe Mongoid::LazyMigration::Document, ".migration(lock)" do
     ModelLock.find(done).migrated.should_not == true
   end
 
+  context "readonly documents" do
+    # a projection will turn an object into a readonly object
+    # see mongoid/lib/mongoid/stateful.rb
+    it "doesn't migrate pending models that are readonly" do
+      ModelLock.only(:migrated).find(pending).migrated.should_not == true
+      ModelLock.only(:migration_state).find(pending).migration_state.should == :pending
+    end
+  end
+
   it "doesn't update the updated_at field during the migration" do
     model = ModelLock.find(pending)
     model.updated_at.should == nil
@@ -50,6 +59,13 @@ describe Mongoid::LazyMigration::Document, ".migration(atomic)" do
 
   it "doesn't migrate done models on fetch" do
     ModelAtomic.find(done).migrated.should_not == true
+  end
+
+  context "readonly documents" do
+    it "doesn't migrate pending models that are readonly" do
+      ModelAtomic.only(:migrated).find(pending).migrated.should_not == true
+      ModelAtomic.only(:migration_state).find(pending).migration_state.should == :pending
+    end
   end
 
   # I don't know how to test this. Please help.
