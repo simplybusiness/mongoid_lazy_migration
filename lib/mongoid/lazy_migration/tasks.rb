@@ -1,20 +1,17 @@
 module Mongoid::LazyMigration::Tasks
   def migrate(criteria=nil)
-    require 'progressbar'
+    require 'ruby-progressbar'
 
     criterias = criteria.nil? ? Mongoid::LazyMigration.models_to_migrate : [criteria]
 
     criterias.each do |criteria|
       to_migrate = criteria.where(:migration_state.ne => :done).batch_size(50)
-      progress = ProgressBar.new(to_migrate.klass.to_s, to_migrate.count)
-      progress.long_running
+      progress = ProgressBar.create title: to_migrate.klass.to_s, total: to_migrate.count
 
       to_migrate.each_with_index do |o, i|
-        progress.inc
+        progress.increment
         sleep 0.07 if i % 100 == 0
       end
-
-      progress.finish
     end
     true
   end
