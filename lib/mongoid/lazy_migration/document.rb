@@ -78,7 +78,7 @@ module Mongoid::LazyMigration::Document
     until migration_state == :done
       reload
       retries += 1
-      raise "#{retries} retries - That's too many for #{self.class}:#{id}" if retries > MAX_RELOAD_RETRIES
+      raise "#{retries} retries - That's too many for #{self.class}:#{id}. This could be due to the `lock`, if no processes are running check the `migration_state` on the record" if retries > MAX_RELOAD_RETRIES
     end
   end
 end
