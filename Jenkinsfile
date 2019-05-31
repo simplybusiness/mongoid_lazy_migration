@@ -11,7 +11,6 @@ pipeline {
 
   parameters {
     booleanParam(name: 'PRE_NOTIFY', defaultValue: true, description: 'Notify of start of build for master branch')
-    booleanParam(name: 'CHECK_SEMAPHORE', defaultValue: true, description: 'Check current Semaphore tests status')
     booleanParam(name: 'BUILD_GEM', defaultValue: true, description: "Build and push ${PROJECT} gem to Gemstash")
     booleanParam(name: 'POST_NOTIFY', defaultValue: true, description: 'Notify of the result of the build for master branch')
   }
