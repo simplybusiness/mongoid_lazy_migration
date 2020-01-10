@@ -2,15 +2,9 @@
 $:.unshift File.expand_path("../lib", __FILE__)
 
 require 'mongoid/lazy_migration/version'
-gem_version = if ENV['GEM_PRE_RELEASE'].nil? || ENV['GEM_PRE_RELEASE'].empty?
-                Mongoid::LazyMigration::VERSION
-              else
-                "#{Mongoid::LazyMigration::VERSION}.#{ENV['GEM_PRE_RELEASE']}"
-              end
-
 Gem::Specification.new do |s|
   s.name        = "mongoid_lazy_migration"
-  s.version     = gem_version
+  s.version     = Mongoid::LazyMigration::VERSION
   s.platform    = Gem::Platform::RUBY
   s.authors     = ["Nicolas Viennot"]
   s.email       = ["nicolas@viennot.biz"]
