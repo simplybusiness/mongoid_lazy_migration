@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = "Mongoid lazy migration toolkit"
   s.description = "Migrate your documents lazily in atomic, or locked fashion to avoid downtime"
 
-  s.add_dependency("mongoid", ">= 5.0", "< 7.0")
+  s.add_dependency("mongoid", ">= 5.0", "< 8.0")
   s.add_dependency("activesupport")
   s.add_dependency("ruby-progressbar")
 
